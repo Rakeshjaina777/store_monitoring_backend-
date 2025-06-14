@@ -171,10 +171,14 @@ Adds an activity status log.
 
 ## 🧪 Sample CSV Output
 
+https://github.com/Rakeshjaina777/store_monitoring_backend-/tree/main/output_sample
+
 ```
 store_id,uptime_last_hour(in minutes),uptime_last_day(in hours),uptime_last_week(in hours),downtime_last_hour(in minutes),downtime_last_day(in hours),downtime_last_week(in hours)
 abc123,45,12.5,80.3,15,11.5,39.7
 ```
+![image](https://github.com/user-attachments/assets/ffc72e11-6730-4d99-a24c-7fc7ed386261)
+
 
 ---
 
