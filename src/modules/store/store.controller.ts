@@ -7,24 +7,30 @@ import { StoreService } from './store.service';
 @Controller('stores')
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
+
   @Post()
   @ApiOperation({ summary: 'Create a new store' })
   @ApiResponse({ status: 201, description: 'Store created successfully' })
-  create(@Body() body: CreateStoreDto) {
+  async create(@Body() body: CreateStoreDto) {
+    const store = await this.storeService.createStore(body);
     return {
       message: 'Store created',
-      store: body,
+      store,
     };
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get store by ID' })
   @ApiResponse({ status: 200, description: 'Store details' })
-  findOne(@Param('id') id: string) {
-    return {
-      id,
-      name: 'Loop Pizza',
-      timezone: 'America/New_York',
-    };
+  async findOne(@Param('id') id: string) {
+    const store = await this.storeService.getStoreById(id);
+    return store;
+  }
+
+  @Get(':id/uptime-last-hour')
+  @ApiOperation({ summary: 'Get store uptime/downtime for the last hour' })
+  @ApiResponse({ status: 200, description: 'Uptime and downtime in minutes' })
+  async getUptimeLastHour(@Param('id') id: string) {
+    return this.storeService.getStoreUptimeLastHour(id);
   }
 }
