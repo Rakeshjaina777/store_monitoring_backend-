@@ -3,11 +3,13 @@ import { ReportStatus } from 'src/common/enum/report-status.enum';
 import { v4 as uuidv4 } from 'uuid';
 import { DateTime } from 'luxon';
 import { getUtcBusinessWindow } from 'src/common/utils/business-hour.util';
+import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class ReportService {
+  constructor(private readonly prisma: PrismaService) {}
   private reports = new Map<string, { status: ReportStatus; csv?: string }>();
-    prisma: any;
+  
 
   triggerReport(): string {
     const reportId = uuidv4();
