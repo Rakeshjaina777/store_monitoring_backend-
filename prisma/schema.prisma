@@ -1,8 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+model Store {
+  id            String           @id @default(uuid())
+  name          String
+  timezone      String           @default("America/Chicago")
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  statuses      StoreStatus[]
+  businessHours StoreBusinessHour[]
+}
+
+model StoreStatus {
+  id        String   @id @default(uuid())
+  storeId   String
+  status    StoreActivityStatus
+  timestamp DateTime
+
+  store     Store    @relation(fields: [storeId], references: [id])
+
+  @@index([storeId])
+  @@index([timestamp])
+}
+
+model StoreBusinessHour {
+  id        String   @id @default(uuid())
+  storeId   String
+  dayOfWeek Int
+  startTime String   // stored as "HH:mm" local time
+  endTime   String
+
+  store     Store    @relation(fields: [storeId], references: [id])
+
+  @@index([storeId, dayOfWeek])
+}
+
+enum StoreActivityStatus {
+  active
+  inactive
 }
