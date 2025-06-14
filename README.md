@@ -1,99 +1,222 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🧠 Store Monitoring Backend – NestJS + PostgreSQL + Prisma
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A scalable, production-ready backend built with **NestJS**, **PostgreSQL**, and **Prisma ORM** to track and download restaurant store uptime/downtime reports with business-hour awareness and real-time analytics.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 🚀 Tech Stack
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+| Layer            | Tool                              |
+|------------------|-----------------------------------|
+| Backend          | [NestJS](https://nestjs.com/)     |
+| ORM              | [Prisma](https://www.prisma.io/)  |
+| Database         | PostgreSQL                        |
+| API Docs         | Swagger + OpenAPI                 |
+| Runtime          | Node.js (v18+)                    |
+| Auth/Guard       | Custom Roles + AuthGuard (Mocked) |
+| Security         | Helmet, CORS, secure headers      |
+| Containerization | Docker + Docker Compose           |
 
-## Project setup
+---
+
+## 🛠️ Local Installation
 
 ```bash
-$ npm install
+# Clone the repository
+git clone https://github.com/your-org/store-monitoring-backend.git
+cd store-monitoring-backend
+
+# Install dependencies
+npm install
+
+# Create environment config
+cp .env.example .env
+
+# Start local PostgreSQL if not using Docker
+docker run -d --name store-db -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres
+
+# Migrate the database schema
+npx prisma migrate dev --name init
+
+# Optional: Seed test data
+npm run seed
+
+# Start the dev server
+npm run start:dev
 ```
 
-## Compile and run the project
+---
+
+## 🐳 Docker Setup
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+# Build and run both backend and DB using docker-compose
+docker-compose up --build
 ```
 
-## Run tests
+- Backend: http://localhost:3000
+- Swagger Docs: http://localhost:3000/api
+- PostgreSQL: exposed on port 5432
 
-```bash
-# unit tests
-$ npm run test
 
-# e2e tests
-$ npm run test:e2e
+---
 
-# test coverage
-$ npm run test:cov
+## 📁 Folder Structure
+
+```
+src/
+├── common/            # DTOs, enums, guards, middleware, filters, utils
+├── modules/           # Modular features (store, report, etc.)
+├── prisma/            # Schema, seed, and client
+├── config/            # App and env config
+├── main.ts            # App bootstrap
 ```
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## 🧠 Prisma Schema & Relationships
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+```prisma
+model Store {
+  id            String              @id @default(uuid())
+  name          String
+  timezone      String              @default("America/Chicago")
+  businessHours StoreBusinessHour[]
+  statuses      StoreStatus[]
+}
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+model StoreStatus {
+  id        String   @id @default(uuid())
+  storeId   String
+  status    StoreActivityStatus
+  timestamp DateTime
+  store     Store    @relation(fields: [storeId], references: [id])
+  @@index([storeId, timestamp])
+}
+
+model StoreBusinessHour {
+  id        String @id @default(uuid())
+  storeId   String
+  dayOfWeek Int
+  startTime String
+  endTime   String
+  store     Store @relation(fields: [storeId], references: [id])
+}
+
+enum StoreActivityStatus {
+  active
+  inactive
+}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+## 🌐 API Documentation (Swagger)
 
-Check out a few resources that may come in handy when working with NestJS:
+Available at: **http://localhost:3000/api**
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+![image](https://github.com/user-attachments/assets/68766b7e-c79c-4a41-973f-2692d140a339)
 
-## Support
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### `POST /trigger_report`
 
-## Stay in touch
+Triggers report generation. Returns a report ID.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```json
+{
+  "reportId": "abc123-report-id"
+}
+```
 
-## License
+---
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-# Store-monistoring-backend
+### `GET /get_report/:reportId`
+
+Poll report status or download CSV if complete.
+
+- If pending:
+```json
+{ "status": "Running" }
+```
+
+- If ready: downloads a CSV file.
+
+---
+
+### `POST /stores`
+
+Creates a new store.
+
+```json
+{
+  "name": "Loop Pizza",
+  "timezone": "America/New_York"
+}
+```
+
+---
+
+### `POST /stores/:id/status`
+
+Adds an activity status log.
+
+```json
+{
+  "status": "active",
+  "timestamp": "2025-06-14T10:00:00Z"
+}
+```
+
+---
+
+## 🧪 Sample CSV Output
+
+```
+store_id,uptime_last_hour(in minutes),uptime_last_day(in hours),uptime_last_week(in hours),downtime_last_hour(in minutes),downtime_last_day(in hours),downtime_last_week(in hours)
+abc123,45,12.5,80.3,15,11.5,39.7
+```
+
+---
+
+## 📦 Environment Variables
+
+| Key             | Example                                      | Description                        |
+|------------------|----------------------------------------------|------------------------------------|
+| `DATABASE_URL`   | `postgresql://postgres:postgres@localhost`   | Prisma DB URL                      |
+| `PORT`           | `3000`                                       | App port                           |
+| `NODE_ENV`       | `development` / `production`                 | Mode                               |
+
+---
+
+## 🛡 Security Features
+
+- ✅ Helmet-based HTTP headers
+- ✅ CORS configuration
+- ✅ Secure response headers
+- ✅ Global DTO validation
+- ✅ Role-based route protection
+- ✅ Global exception handling
+- ✅ Global response interceptor
+
+---
+
+## 🧠 Future Scope
+
+| Feature        | Description                                                 |
+|----------------|-------------------------------------------------------------|
+| 🔄 Redis        | Caching report output / async job state                    |
+| 📩 Kafka        | Asynchronous queue to handle bulk report requests          |
+| 📥 BullMQ       | Background job processing                                  |
+| 🔐 JWT Auth     | Secure API with user auth & token guards                   |
+| 🏢 Multi-Tenant | Org-specific reports and store segregation                 |
+| 📊 React UI     | Dashboard for report downloads, analytics, visualizations |
+
+---
+
+## 🧑‍💻 Author & Maintainer
+
+- 👤 **Author**: Rakesh Jain
+- 🏢 **Linkdien**: https://www.linkedin.com/in/rakesh-jain-b93b28223/
+- 🛠 **Stack**: Node.js · NestJS · PostgreSQL · Prisma · Swagger · Docker
+
+---
