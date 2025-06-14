@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { AppModule } from './modules/app/app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
@@ -25,14 +25,15 @@ async function bootstrap() {
     allowedHeaders: 'Content-Type, Accept',
     credentials: true,
   });
-  
+
   app.useGlobalInterceptors(new ResponseInterceptor());
-  
+
   // Allow credentials if needed
 
-  
   await app.listen(process.env.PORT || 3001);
 
-  console.log(`🚀 Server running on http://localhost:${process.env.PORT || 3001}`);
+  console.log(
+    `🚀 Server running on http://localhost:${process.env.PORT || 3001}`,
+  );
 }
 bootstrap();

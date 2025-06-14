@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import configuration from './config/configuration';
+import configuration from '../../config/configuration';
 import { PrismaService } from 'prisma/prisma.service';
-import { LoggerService } from './common/logger/logger.service';
+import { LoggerService } from '../../common/logger/logger.service';
+import { StoreModule } from '../store/store.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { LoggerService } from './common/logger/logger.service';
       isGlobal: true,
       load: [configuration],
     }),
+    StoreModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, LoggerService],
