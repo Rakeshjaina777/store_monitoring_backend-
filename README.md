@@ -1,6 +1,6 @@
-# 🧠 Store Monitoring Backend – NestJS + PostgreSQL + Prisma
+# 🧠 Store Monitoring Backend – NODE JS + PostgreSQL + Prisma
 
-A scalable, production-ready backend built with **NestJS**, **PostgreSQL**, and **Prisma ORM** to track and download restaurant store uptime/downtime reports with business-hour awareness and real-time analytics.
+A scalable, production-ready backend built with **Node JS**, **PostgreSQL**, and **Prisma ORM** to track and download restaurant store uptime/downtime reports with business-hour awareness and real-time analytics.
 
 ---
 
@@ -8,7 +8,7 @@ A scalable, production-ready backend built with **NestJS**, **PostgreSQL**, and 
 
 | Layer            | Tool                              |
 |------------------|-----------------------------------|
-| Backend          | [NestJS](https://nestjs.com/)     |
+| Backend          | [Node JS](https://nestjs.com/)     |
 | ORM              | [Prisma](https://www.prisma.io/)  |
 | Database         | PostgreSQL                        |
 | API Docs         | Swagger + OpenAPI                 |
@@ -204,17 +204,31 @@ abc123,45,12.5,80.3,15,11.5,39.7
 
 ---
 
-## 🧠 Future Scope
+## 🧠 Future Scope / Improvement
 
-| Feature        | Description                                                 |
-|----------------|-------------------------------------------------------------|
-| 🔄 Redis        | Caching report output / async job state                    |
-| 📩 Kafka        | Asynchronous queue to handle bulk report requests          |
-| 📥 BullMQ       | Background job processing                                  |
-| 🔐 JWT Auth     | Secure API with user auth & token guards                   |
-| 🏢 Multi-Tenant | Org-specific reports and store segregation                 |
-| 📊 React UI     | Dashboard for report downloads, analytics, visualizations |
+- **🔐 Role-Based Access Control (RBAC)**  
+  **Why it matters**: Enforces strict user permissions, ensuring that only authorized personnel (admins, staff, managers) can access specific features.  
+  **Future implementation**: Leverage NestJS `@Roles()` decorators and `AuthGuard`, structured with enums and user claims inside JWT tokens.
 
+- **🕒 Scheduled Auto-Reports via Cron + Redis Caching**  
+  **Why it matters**: Automates daily/weekly report generation and caching to eliminate manual triggers and optimize performance.  
+  **Future implementation**: Use `@nestjs/schedule` for cron-based jobs and Redis to cache report data for quick retrieval.
+
+- **⚙️ Background Queue with BullMQ for Heavy Report Jobs**  
+  **Why it matters**: Offloads intensive report computation from the main thread, ensuring API responsiveness even under load.  
+  **Future implementation**: Integrate `BullMQ` + Redis to enqueue report generation and process asynchronously with retry logic.
+
+- **📡 Real-Time Downtime Notifications (WebSockets + Alerts)**  
+  **Why it matters**: Provides instant visibility to store managers when a store goes inactive. Great for operations and SLA monitoring.  
+  **Future implementation**: Implement WebSocket (via `@nestjs/websockets`) or MQTT, and optionally send email/Slack alerts.
+
+- **📊 PDF Report Export for Stakeholders**  
+  **Why it matters**: Generates printable summaries for managers and executives, usable in reviews and compliance.  
+  **Future implementation**: Render reports to PDF using `Puppeteer`, `html-pdf`, or similar libraries.
+
+- **🏢 Multi-Tenant SaaS Mode with Billing**  
+  **Why it matters**: Supports scaling across multiple organizations with isolated data and role access per org. Opens monetization opportunities.  
+  **Future implementation**: Add tenant-aware data layers + billing integration via Stripe for usage tiers.
 ---
 
 ## 🧑‍💻 Author & Maintainer
