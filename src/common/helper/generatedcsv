@@ -1,0 +1,50 @@
+// import { DateTime } from 'luxon';
+// import { getUtcBusinessWindow } from '@/common/utils/business-hour.util';
+
+// async generateCSV(): Promise<string> {
+//   const now = DateTime.utc();
+//   const oneHourAgo = now.minus({ hours: 1 });
+//   const oneDayAgo = now.minus({ days: 1 });
+//   const oneWeekAgo = now.minus({ weeks: 1 });
+
+//   const stores = await this.prisma.store.findMany({
+//     include: {
+//       statuses: true,
+//       businessHours: true,
+//     },
+//   });
+
+//   const headers = [
+//     'store_id',
+//     'uptime_last_hour(in minutes)',
+//     'uptime_last_day(in hours)',
+//     'uptime_last_week(in hours)',
+//     'downtime_last_hour(in minutes)',
+//     'downtime_last_day(in hours)',
+//     'downtime_last_week(in hours)',
+//   ];
+
+//   const rows: string[] = [headers.join(',')];
+
+//   for (const store of stores) {
+//     const tz = store.timezone || 'America/Chicago';
+
+//     const [hourData, dayData, weekData] = await Promise.all([
+//       this.computeDurations(store, oneHourAgo, now, tz),
+//       this.computeDurations(store, oneDayAgo, now, tz),
+//       this.computeDurations(store, oneWeekAgo, now, tz),
+//     ]);
+
+//     rows.push([
+//       store.id,
+//       hourData.uptime.toFixed(2),
+//       dayData.uptime.toFixed(2),
+//       weekData.uptime.toFixed(2),
+//       hourData.downtime.toFixed(2),
+//       dayData.downtime.toFixed(2),
+//       weekData.downtime.toFixed(2),
+//     ].join(','));
+//   }
+
+//   return rows.join('\n');
+// }

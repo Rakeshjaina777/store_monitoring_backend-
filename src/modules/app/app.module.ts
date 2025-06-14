@@ -7,6 +7,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { LoggerService } from '../../common/logger/logger.service';
 import { StoreModule } from '../store/store.module';
 import { LoggerMiddleware } from 'src/common/middleware/logger.middleware';
+import { ReportModule } from '../report/report.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { LoggerMiddleware } from 'src/common/middleware/logger.middleware';
       load: [configuration],
     }),
     StoreModule,
+    ReportModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, LoggerService],
