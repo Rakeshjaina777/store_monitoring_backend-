@@ -235,6 +235,7 @@ abc123,45,12.5,80.3,15,11.5,39.7
 
 - 👤 **Author**: Rakesh Jain
 - 🏢 **Linkdien**: https://www.linkedin.com/in/rakesh-jain-b93b28223/
+
 - 🛠 **Stack**: Node.js · NestJS · PostgreSQL · Prisma · Swagger · Docker
 
 ---
